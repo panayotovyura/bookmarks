@@ -2,3 +2,4 @@ bookmarks:
     resource: "@BookmarksBundle/Controller/"
     type:     annotation
     prefix:   /
+    defaults: { "_format": "json" }
