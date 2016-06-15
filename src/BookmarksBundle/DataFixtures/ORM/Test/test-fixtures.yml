@@ -1,0 +1,13 @@
+BookmarksBundle\Entity\Bookmark:
+    bookmark{1..20}:
+        uid (unique): bookmark-uid-<uuid()>
+        created_at: <dateTimeBetween('2016-06-14', '2016-06-16')>
+        url: <url()>
+
+BookmarksBundle\Entity\Comment:
+    comment{1..200}:
+        bookmark: '@bookmark*'
+        uid (unique): comment-uid-<uuid()>
+        created_at: <dateTimeBetween('2016-06-14', '2016-06-16')>
+        ip: <ipv4()>
+        text: <text()>
