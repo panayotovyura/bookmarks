@@ -1,11 +1,11 @@
 BookmarksBundle\Entity\Bookmark:
     bookmark{1..20}:
-        created_at: <dateTimeBetween('2016-06-14', '2016-06-16')>
+        createdAt: <dateTimeBetween('2016-06-14', '2016-06-16')>
         url: <url()>
 
 BookmarksBundle\Entity\Comment:
     comment{1..200}:
         bookmark: '@bookmark*'
-        created_at: <dateTimeBetween('2016-06-14', '2016-06-16')>
+        createdAt: <dateTimeBetween('2016-06-14', '2016-06-16')>
         ip: <ipv4()>
         text: <text()>
