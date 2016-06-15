@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\Collection;
  *
  * @ORM\Table(name="bookmarks")
  * @ORM\Entity(repositoryClass="BookmarksBundle\Repository\BookmarkRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Bookmark
 {
@@ -61,13 +62,27 @@ class Bookmark
     }
 
     /**
+     * @ORM\PrePersist
+     *
+     * @return $this
+     */
+    public function preSetCreatedAt()
+    {
+        if (null === $this->createdAt) {
+            $this->createdAt = new \DateTime();
+        }
+
+        return $this;
+    }
+
+    /**
      * Set createdAt
      *
      * @param \DateTime $createdAt
      *
      * @return Bookmark
      */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(\DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
 
