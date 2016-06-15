@@ -1,6 +1,6 @@
 <?php
 
-namespace BookmarksBundle\Tests\Controller;
+namespace Tests\BookmarksBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
