@@ -1,3 +1,4 @@
-app:
-    resource: "@AppBundle/Controller/"
+bookmarks:
+    resource: "@BookmarksBundle/Controller/"
     type:     annotation
+    prefix:   /
