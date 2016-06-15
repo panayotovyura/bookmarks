@@ -13,11 +13,20 @@ class RESTController extends Controller
      * @Route("/bookmarks")
      * @Method({"GET"})
      */
-    public function latestAction()
+    public function latestBookmarksAction()
     {
         // todo: move to service
         $data = $this->getDoctrine()->getRepository(Bookmark::class)->findBy([], ['createdAt' => 'DESC'], 10);
 
         return $this->json($data);
+    }
+
+    /**
+     * @Route("/bookmarks/{url}", requirements={"url" = ".+"})
+     * @Method({"GET"})
+     */
+    public function getBookmarkByUrlAction(Bookmark $bookmark)
+    {
+        return $this->json($bookmark);
     }
 }
