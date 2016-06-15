@@ -2,6 +2,7 @@
 
 namespace BookmarksBundle\Controller;
 
+use BookmarksBundle\Entity\Comment;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -9,6 +10,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use BookmarksBundle\Entity\Bookmark;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class RESTController extends Controller
@@ -16,6 +18,8 @@ class RESTController extends Controller
     /**
      * @Route("/bookmark")
      * @Method({"GET"})
+     *
+     * @return JsonResponse
      */
     public function latestBookmarksAction()
     {
@@ -26,8 +30,50 @@ class RESTController extends Controller
     }
 
     /**
+     * @Route("/bookmark/{uid}/comment")
+     * @Method({"POST"})
+     *
+     * @param Bookmark $bookmark
+     * @param Request $request
+     *
+     * @throws BadRequestHttpException
+     *
+     * @return JsonResponse
+     */
+    public function createComment(Bookmark $bookmark, Request $request)
+    {
+        $text = $request->get('text');
+        $violationsList = $this->get('validator')->validate(
+            $text,
+            [
+                new Assert\NotBlank(),
+            ]
+        );
+
+        if (count($violationsList) > 0) {
+            throw new BadRequestHttpException($violationsList->get(0)->getMessage());
+        }
+
+        $comment = (new Comment())
+            ->setIp($request->getClientIp())
+            ->setText($text)
+            ->setBookmark($bookmark);
+
+        // todo: move to service
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($comment);
+        $entityManager->flush();
+
+        return $this->json(['uid' => $comment->getUid()], Response::HTTP_CREATED);
+    }
+
+    /**
      * @Route("/bookmark/{url}", requirements={"url" = ".+"})
      * @Method({"GET"})
+     *
+     * @param Bookmark $bookmark
+     *
+     * @return JsonResponse
      */
     public function getBookmarkByUrlAction(Bookmark $bookmark)
     {
@@ -37,8 +83,14 @@ class RESTController extends Controller
     /**
      * @Route("/bookmark")
      * @Method({"POST"})
+     *
+     * @param Request $request
+     *
+     * @throws BadRequestHttpException
+     *
+     * @return JsonResponse
      */
-    public function createBookmarkByUrlAction(Request $request)
+    public function createBookmarkAction(Request $request)
     {
         $url = $request->get('url');
         $violationsList = $this->get('validator')->validate(
