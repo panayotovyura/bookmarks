@@ -17,16 +17,9 @@ class Bookmark
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="uid", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="uid", type="string", length=255, unique=true)
      */
     private $uid;
 
@@ -58,33 +51,9 @@ class Bookmark
     }
 
     /**
-     * Get id
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set uid
-     *
-     * @param string $uid
-     *
-     * @return Bookmark
-     */
-    public function setUid($uid)
-    {
-        $this->uid = $uid;
-
-        return $this;
-    }
-
-    /**
      * Get uid
      *
-     * @return string
+     * @return int
      */
     public function getUid()
     {
