@@ -1,0 +1,13 @@
+/.idea
+/app/config/parameters.yml
+/app/*.db3
+/var/logs/*
+/var/cache/*
+/var/sessions/*
+!var/cache/.gitkeep
+!var/logs/.gitkeep
+!var/sessions/.gitkeep
+/var/bootstrap.php.cache
+/vendor
+/web/bundles/
+/phpunit.xml
