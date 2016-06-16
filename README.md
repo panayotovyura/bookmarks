@@ -35,3 +35,66 @@ Analysis Tools:
 2. PHP Mess Detector: ./vendor/bin/phpmd src text cleancode,codesize,controversial,design,unusedcode
 
 3. PHP Copy/Paste Detector: ./vendor/bin/phpcpd src
+
+### For frontend developer:
+
+1. Get 10 latest bookmarks:
+Example:
+```sh
+GET /bookmark
+```
+Response:
+```sh
+[
+    {
+        "uid": 1,
+        "createdAt": "2016-06-16T15:37:31+03:00",
+        "url": "http://google.com",
+        "comments": []
+    },
+    {
+        "uid": 2,
+        "createdAt": "2016-06-15T23:39:26+03:00",
+        "url": "http://www.howe.com/culpa-rem-aut-rerum-exercitationem-est-rem",
+        "comments": [
+            {
+                "uid": 1,
+                "createdAt": "2016-06-14T07:13:44+03:00",
+                "ip": "218.230.103.77",
+                "text": "Similique ad sed architecto quod nulla. Voluptas quibusdam inventore esse harum accusantium rerum nulla.",
+                "bookmark": 2,
+                "changeableAndDeletable": false
+            },
+        ...
+	},
+	...
+]
+```
+2. Get bookmark by url:
+Format:
+```sh
+GET /bookmark/{url}
+```
+Example:
+```sh
+GET /bookmark/http://google.com
+```
+Response:
+```sh
+{
+    "uid": 1,
+    "createdAt": "2016-06-16T14:43:20+03:00",
+    "url": "http://google.com",
+    "comments": [
+        {
+            "uid": 1,
+            "createdAt": "2016-06-14T07:13:44+03:00",
+            "ip": "218.230.103.77",
+            "text": "Similique ad sed architecto quod nulla. Voluptas quibusdam inventore esse harum accusantium rerum nulla.",
+            "bookmark": 1,
+            "changeableAndDeletable": false
+        },
+        ...
+    ]
+}
+```
