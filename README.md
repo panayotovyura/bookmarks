@@ -1,7 +1,6 @@
 <a href="https://travis-ci.org/panayotovyura/bookmarks"><img src="https://travis-ci.org/panayotovyura/bookmarks.svg"></a>
 
-# bookmarks
-=========
+# Bookmarks
 
 ### For admin:
 
