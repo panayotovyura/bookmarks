@@ -2,7 +2,7 @@
 
 namespace BookmarksBundle\Services;
 
-class CircularRererenceHandler
+class CircularReferenceHandler
 {
     public function handle($object)
     {

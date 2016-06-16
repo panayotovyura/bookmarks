@@ -1,4 +1,9 @@
 services:
-#    bookmarks.example:
-#        class: BookmarksBundle\Example
-#        arguments: ["@service_id", "plain_value", %parameter%]
+    bookmarks.repository:
+        class: Doctrine\ORM\EntityRepository
+        factory: ['@doctrine.orm.entity_manager', getRepository]
+        arguments: ['BookmarksBundle:Bookmark']
+
+    bookmarks:
+        class: BookmarksBundle\Services\BookmarkService
+        arguments: ['@doctrine.orm.entity_manager', '@bookmarks.repository']

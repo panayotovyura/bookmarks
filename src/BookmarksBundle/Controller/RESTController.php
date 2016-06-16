@@ -26,10 +26,9 @@ class RESTController extends Controller
      */
     public function latestBookmarksAction()
     {
-        // todo: move to service
-        $data = $this->getDoctrine()->getRepository(Bookmark::class)->findBy([], ['createdAt' => 'DESC'], 10);
-
-        return $this->json($data);
+        return $this->json(
+            $this->get('bookmarks')->getLatest()
+        );
     }
 
     /**
@@ -61,8 +60,7 @@ class RESTController extends Controller
      */
     public function createBookmarkAction(Request $request)
     {
-        $requestData = $this->get('serializer')->decode($request->getContent(), 'json');
-        $url = isset($requestData['url']) ? $requestData['url'] : null;
+        $url = $this->getRequestBodyJsonVariable('url', $request);
 
         $violationsList = $this->get('validator')->validate(
             $url,
@@ -107,8 +105,7 @@ class RESTController extends Controller
      */
     public function createComment(Bookmark $bookmark, Request $request)
     {
-        $requestData = $this->get('serializer')->decode($request->getContent(), 'json');
-        $text = isset($requestData['text']) ? $requestData['text'] : null;
+        $text = $this->getRequestBodyJsonVariable('text', $request);
 
         // todo: move to function
         $violationsList = $this->get('validator')->validate(
@@ -155,9 +152,7 @@ class RESTController extends Controller
             throw new NotFoundHttpException();
         }
 
-        $requestData = $this->get('serializer')->decode($request->getContent(), 'json');
-        $text = isset($requestData['text']) ? $requestData['text'] : null;
-
+        $text = $this->getRequestBodyJsonVariable('text', $request);
         // todo: move to function
         $violationsList = $this->get('validator')->validate(
             $text,
@@ -207,5 +202,19 @@ class RESTController extends Controller
         }
 
         return $this->json([], Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * Get variable from json request body
+     *
+     * @param string $name
+     * @param Request $request
+     *
+     * @return mixed
+     */
+    protected function getRequestBodyJsonVariable($name, Request $request)
+    {
+        $requestData = $this->get('serializer')->decode($request->getContent(), 'json');
+        return isset($requestData[$name]) ? $requestData[$name] : null;
     }
 }

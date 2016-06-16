@@ -10,7 +10,7 @@ use Doctrine\Common\Collections\Collection;
  * Bookmark
  *
  * @ORM\Table(name="bookmarks")
- * @ORM\Entity(repositoryClass="BookmarksBundle\Repository\BookmarkRepository")
+ * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks()
  */
 class Bookmark

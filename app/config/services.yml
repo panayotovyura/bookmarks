@@ -4,11 +4,8 @@ parameters:
 #    parameter_name: value
 
 services:
-#    service_name:
-#        class: AppBundle\Directory\ClassName
-#        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
     serializer.normalizer.handler:
-        class: BookmarksBundle\Services\CircularRererenceHandler
+        class: BookmarksBundle\Services\CircularReferenceHandler
 
     serializer.normalizer.object:
         class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
