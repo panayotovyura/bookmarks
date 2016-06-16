@@ -305,6 +305,36 @@ class RESTControllerTest extends WebTestCase
         );
     }
 
+    public function testDeleteCommentSuccess()
+    {
+        $comment = $this->getExistingComment();
+
+        $this->client->request(
+            Request::METHOD_DELETE,
+            '/comment/' . $comment->getUid(),
+            [],
+            [],
+            [
+                'REMOTE_ADDR' => self::EXISTING_COMMENT_IP,
+            ]
+        );
+
+        $this->assertEquals(
+            Response::HTTP_NO_CONTENT,
+            $this->client->getResponse()->getStatusCode()
+        );
+    }
+
+    public function testDeleteCommentNotFound()
+    {
+        $this->client->request(Request::METHOD_DELETE, '/comment/404');
+
+        $this->assertEquals(
+            Response::HTTP_NOT_FOUND,
+            $this->client->getResponse()->getStatusCode()
+        );
+    }
+
     public function createUpdateCommentRequestProvider()
     {
         return [
