@@ -39,6 +39,7 @@ Analysis Tools:
 ### For frontend developer:
 
 1. Get 10 latest bookmarks:
+
 Example:
 ```sh
 GET /bookmark
@@ -71,6 +72,7 @@ Response:
 ]
 ```
 2. Get bookmark by url:
+
 Format:
 ```sh
 GET /bookmark/{url}
