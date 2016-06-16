@@ -1,0 +1,3 @@
+# This file is auto-generated during the composer install
+parameters:
+    database_path: '%kernel.root_dir%/data_test.db3'
