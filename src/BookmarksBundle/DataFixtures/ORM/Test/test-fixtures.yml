@@ -12,3 +12,8 @@ BookmarksBundle\Entity\Comment:
         createdAt: <dateTimeBetween('2016-06-14', '2016-06-16')>
         ip: <ipv4()>
         text: <text()>
+    commentForTest:
+        bookmark: '@bookmarkForTest'
+        ip: '192.168.0.1'
+        createdAt: <dateTime('2016-06-14')>
+        text: 'comment text'

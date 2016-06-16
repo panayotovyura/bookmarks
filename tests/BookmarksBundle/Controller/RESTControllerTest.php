@@ -7,18 +7,33 @@ use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use BookmarksBundle\Entity\Bookmark;
+use BookmarksBundle\Entity\Comment;
+use Doctrine\ORM\EntityManager;
 
 class RESTControllerTest extends WebTestCase
 {
     const EXISTING_BOOKMARK_URL = 'http://google.com';
+
+    const EXISTING_COMMENT_IP = '192.168.0.1';
+
     /**
      * @var Client
      */
     private $client;
 
+    /**
+     * @var EntityManager
+     */
+    private $entityManager;
+
     public function setUp()
     {
         $this->client = static::createClient();
+        $this->entityManager = $this
+            ->client
+            ->getContainer()
+            ->get('doctrine')
+            ->getManager();
     }
 
     public function testGetLatestBookmarks()
@@ -134,7 +149,7 @@ class RESTControllerTest extends WebTestCase
     {
         $this->client->request(
             Request::METHOD_POST,
-            '/bookmark/' . $this->getExistingBookmarkUid() . '/comment',
+            '/bookmark/' . $this->getExistingBookmark()->getUid() . '/comment',
             [],
             [],
             [],
@@ -158,7 +173,7 @@ class RESTControllerTest extends WebTestCase
     {
         $this->client->request(
             Request::METHOD_POST,
-            '/bookmark/' . $this->getExistingBookmarkUid() . '/comment',
+            '/bookmark/' . $this->getExistingBookmark()->getUid() . '/comment',
             [],
             [],
             [],
@@ -183,18 +198,144 @@ class RESTControllerTest extends WebTestCase
         ];
     }
 
+    public function testUpdateCommentSuccess()
+    {
+        $comment = $this->getExistingComment()->setCreatedAt(new \DateTime('-10 minutes'));
+        $this->entityManager->flush();
+
+        $updateText = 'new comment text';
+        $this->client->request(
+            Request::METHOD_PUT,
+            '/comment/' . $comment->getUid(),
+            [],
+            [],
+            [
+                'REMOTE_ADDR' => self::EXISTING_COMMENT_IP,
+            ],
+            json_encode([
+                'text' => $updateText
+            ])
+        );
+
+        $this->assertEquals(
+            Response::HTTP_OK,
+            $this->client->getResponse()->getStatusCode()
+        );
+
+        $this->assertEquals(
+            $updateText,
+            $this->getExistingComment()->getText()
+        );
+    }
+
+    public function testUpdateCommentNotUpdated()
+    {
+        $comment = $this->getExistingComment()->setCreatedAt(new \DateTime('-2 hours'));
+        $this->entityManager->flush();
+
+        $updateText = 'new comment text to update';
+        $this->client->request(
+            Request::METHOD_PUT,
+            '/comment/' . $comment->getUid(),
+            [],
+            [],
+            [
+                'REMOTE_ADDR' => self::EXISTING_COMMENT_IP,
+            ],
+            json_encode([
+                'text' => $updateText
+            ])
+        );
+
+        $this->assertEquals(
+            Response::HTTP_OK,
+            $this->client->getResponse()->getStatusCode()
+        );
+
+        $this->assertNotEquals(
+            $updateText,
+            $this->getExistingComment()->getText()
+        );
+    }
+
+    public function testUpdateCommentNotFound()
+    {
+        $comment = $this->getExistingComment();
+
+        $this->client->request(
+            Request::METHOD_PUT,
+            '/comment/' . $comment->getUid(),
+            [],
+            [],
+            [],
+            json_encode([
+                'text' => 'some text'
+            ])
+        );
+
+        $this->assertEquals(
+            Response::HTTP_NOT_FOUND,
+            $this->client->getResponse()->getStatusCode()
+        );
+    }
+
     /**
-     * @return int
+     * @dataProvider createUpdateCommentRequestProvider
+     *
+     * @param $data
      */
-    protected function getExistingBookmarkUid()
+    public function testUpdateCommentRequest($data)
+    {
+        $comment = $this->getExistingComment();
+
+        $this->client->request(
+            Request::METHOD_PUT,
+            '/comment/' . $comment->getUid(),
+            [],
+            [],
+            [
+                'REMOTE_ADDR' => self::EXISTING_COMMENT_IP,
+            ],
+            json_encode($data)
+        );
+
+        $this->assertEquals(
+            Response::HTTP_BAD_REQUEST,
+            $this->client->getResponse()->getStatusCode()
+        );
+    }
+
+    public function createUpdateCommentRequestProvider()
+    {
+        return [
+            [
+                [],
+                [
+                    'text' => '',
+                ],
+            ]
+        ];
+    }
+
+    /**
+     * @return Bookmark
+     */
+    protected function getExistingBookmark()
     {
         return $this
-            ->client
-            ->getContainer()
-            ->get('doctrine')
-            ->getManager()
+            ->entityManager
             ->getRepository(Bookmark::class)
-            ->findOneBy(['url' => self::EXISTING_BOOKMARK_URL])
-            ->getUid();
+            ->findOneBy(['url' => self::EXISTING_BOOKMARK_URL]);
+    }
+
+    /**
+     * @return Comment
+     */
+    protected function getExistingComment()
+    {
+        return $this
+            ->entityManager
+            ->getRepository(Comment::class)
+            ->findOneBy(['ip' => self::EXISTING_COMMENT_IP]);
     }
 }
