@@ -6,7 +6,6 @@ use BookmarksBundle\Entity\Comment;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use BookmarksBundle\Entity\Bookmark;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,6 +17,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 class RESTController extends Controller
 {
     /**
+     * Get 10 latest bookmarks action
+     *
      * @Route("/bookmark")
      * @Method({"GET"})
      *
@@ -32,6 +33,8 @@ class RESTController extends Controller
     }
 
     /**
+     * Get bookmark by url action
+     *
      * @Route("/bookmark/{url}", requirements={"url" = ".+"})
      * @Method({"GET"})
      *
@@ -45,6 +48,8 @@ class RESTController extends Controller
     }
 
     /**
+     * Create bookmark action
+     *
      * @Route("/bookmark")
      * @Method({"POST"})
      *
@@ -56,7 +61,9 @@ class RESTController extends Controller
      */
     public function createBookmarkAction(Request $request)
     {
-        $url = $request->get('url');
+        $requestData = $this->get('serializer')->decode($request->getContent(), 'json');
+        $url = isset($requestData['url']) ? $requestData['url'] : null;
+
         $violationsList = $this->get('validator')->validate(
             $url,
             [
@@ -86,6 +93,8 @@ class RESTController extends Controller
     }
 
     /**
+     * Create comment for bookmark action
+     *
      * @Route("/bookmark/{uid}/comment")
      * @Method({"POST"})
      *
@@ -98,7 +107,9 @@ class RESTController extends Controller
      */
     public function createComment(Bookmark $bookmark, Request $request)
     {
-        $text = $request->get('text');
+        $requestData = $this->get('serializer')->decode($request->getContent(), 'json');
+        $text = isset($requestData['text']) ? $requestData['text'] : null;
+
         // todo: move to function
         $violationsList = $this->get('validator')->validate(
             $text,
@@ -125,8 +136,18 @@ class RESTController extends Controller
     }
 
     /**
+     * Update comment action
+     *
      * @Route("/comment/{uid}")
      * @Method({"PUT"})
+     *
+     * @param Comment $comment
+     * @param Request $request
+     *
+     * @throws NotFoundHttpException
+     * @throws BadRequestHttpException
+     *
+     * @return JsonResponse
      */
     public function updateCommentAction(Comment $comment, Request $request)
     {
@@ -134,9 +155,9 @@ class RESTController extends Controller
             throw new NotFoundHttpException();
         }
 
-        $putStr = $request->getContent();
-        parse_str($putStr, $putData);
-        $text = isset($putData['text']) ? $putData['text'] : null;
+        $requestData = $this->get('serializer')->decode($request->getContent(), 'json');
+        $text = isset($requestData['text']) ? $requestData['text'] : null;
+
         // todo: move to function
         $violationsList = $this->get('validator')->validate(
             $text,
@@ -150,13 +171,41 @@ class RESTController extends Controller
         }
 
         // todo: move to service
-        if ($comment->getCreatedAt()->add(new \DateInterval('PT1H')) > new \DateTime()) {
+        if ($comment->isChangeableAndDeletable()) {
             $comment->setText($text);
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->flush();
         }
 
         return $this->json(['uid' => $comment->getUid()]);
+    }
 
+    /**
+     * Delete comment action
+     *
+     * @Route("/comment/{uid}")
+     * @Method({"DELETE"})
+     *
+     * @param Comment $comment
+     * @param Request $request
+     *
+     * @throws NotFoundHttpException
+     *
+     * @return JsonResponse
+     */
+    public function deleteCommentAction(Comment $comment, Request $request)
+    {
+        if ($comment->getIp() != $request->getClientIp()) {
+            throw new NotFoundHttpException();
+        }
+
+        // todo: move to service
+        if ($comment->isChangeableAndDeletable()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->remove($comment);
+            $entityManager->flush();
+        }
+
+        return $this->json([], Response::HTTP_NO_CONTENT);
     }
 }

@@ -168,4 +168,14 @@ class Comment
 
         return $this;
     }
+
+    /**
+     * Does comment can be changed or deleted?
+     *
+     * @return bool
+     */
+    public function isChangeableAndDeletable()
+    {
+        return $this->createdAt->add(new \DateInterval('PT1H')) > new \DateTime();
+    }
 }
