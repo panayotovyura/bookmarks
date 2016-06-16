@@ -4,6 +4,7 @@ namespace BookmarksBundle\Services;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
+use BookmarksBundle\Entity\Bookmark;
 
 class BookmarkService
 {
@@ -39,5 +40,28 @@ class BookmarkService
     public function getLatest($limit = 10)
     {
         return $this->repository->findBy([], ['createdAt' => 'DESC'], $limit);
+    }
+
+    /**
+     * Get bookmark by url
+     *
+     * @param $url
+     *
+     * @return null|Bookmark
+     */
+    public function getByUrl($url)
+    {
+        return $this->repository->findOneBy(['url' => $url]);
+    }
+
+    /**
+     * Save bookmark object
+     *
+     * @param Bookmark $bookmark
+     */
+    public function save(Bookmark $bookmark)
+    {
+        $this->entityManager->persist($bookmark);
+        $this->entityManager->flush();
     }
 }

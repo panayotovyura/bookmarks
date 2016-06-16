@@ -74,16 +74,12 @@ class RESTController extends Controller
             throw new BadRequestHttpException($violationsList->get(0)->getMessage());
         }
 
+        $bookmark = $this->get('bookmarks')->getByUrl($url);
         $responseStatus = Response::HTTP_OK;
-        // todo: move to service
-        $bookmark = $this->getDoctrine()->getRepository(Bookmark::class)->findOneBy(['url' => $url]);
 
         if (!($bookmark instanceof Bookmark)) {
-            // todo: move to service
             $bookmark = (new Bookmark())->setUrl($url);
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($bookmark);
-            $entityManager->flush();
+            $this->get('bookmarks')->save($bookmark);
             $responseStatus = Response::HTTP_CREATED;
         }
 
