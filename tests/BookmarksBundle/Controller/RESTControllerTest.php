@@ -52,4 +52,77 @@ class RESTControllerTest extends WebTestCase
             $this->client->getResponse()->isNotFound()
         );
     }
+
+    public function testCreateBookmarkSuccess()
+    {
+        $this->client->request(
+            Request::METHOD_POST,
+            '/bookmark',
+            [],
+            [],
+            [],
+            json_encode([
+                'url' => 'http://yandex.ru',
+            ])
+        );
+
+        $this->assertEquals(
+            Response::HTTP_CREATED,
+            $this->client->getResponse()->getStatusCode()
+        );
+    }
+
+    public function testCreateBookmarkExist()
+    {
+        $this->client->request(
+            Request::METHOD_POST,
+            '/bookmark',
+            [],
+            [],
+            [],
+            json_encode([
+                'url' => 'http://google.com',
+            ])
+        );
+
+        $this->assertEquals(
+            Response::HTTP_OK,
+            $this->client->getResponse()->getStatusCode()
+        );
+    }
+
+    /**
+     * @dataProvider createBookmarkInvalidRequestProvider
+     */
+    public function testCreateBookmarkInvalidRequest($data)
+    {
+        $this->client->request(
+            Request::METHOD_POST,
+            '/bookmark',
+            [],
+            [],
+            [],
+            json_encode($data)
+        );
+
+        $this->assertEquals(
+            Response::HTTP_BAD_REQUEST,
+            $this->client->getResponse()->getStatusCode()
+        );
+    }
+
+    public function createBookmarkInvalidRequestProvider()
+    {
+        return [
+            [
+                [],
+                [
+                    'url' => '',
+                ],
+                [
+                    'url' => 'invalidUrl',
+                ],
+            ]
+        ];
+    }
 }
