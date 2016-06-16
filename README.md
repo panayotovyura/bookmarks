@@ -4,7 +4,7 @@
 
 ### For admin:
 
-Run project:
+#### Run project:
 
 1. composer install
 
@@ -18,7 +18,7 @@ Run project:
 
 6. configuration for apache or nginx see http://symfony.com/doc/current/cookbook/configuration/web_server_configuration.html
 
-PhpUnit:
+#### PhpUnit:
 
 1. php bin/console doctrine:database:create --env=test
 
@@ -28,7 +28,7 @@ PhpUnit:
 
 4. ./vendor/bin/phpunit
 
-Analysis Tools:
+#### Analysis Tools:
 
 1. PHP_CodeSniffer: ./vendor/bin/phpcs --standard=psr2 src
 
@@ -72,7 +72,7 @@ Response:
 ]
 ```
 
-### Get bookmark by url:
+#### Get bookmark by url:
 
 Format:
 ```sh
