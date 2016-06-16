@@ -6,9 +6,11 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use BookmarksBundle\Entity\Bookmark;
 
 class RESTControllerTest extends WebTestCase
 {
+    const EXISTING_BOOKMARK_URL = 'http://google.com';
     /**
      * @var Client
      */
@@ -37,7 +39,7 @@ class RESTControllerTest extends WebTestCase
 
     public function testGetBookmarkByUrlSuccess()
     {
-        $this->client->request(Request::METHOD_GET, '/bookmark/http://google.com');
+        $this->client->request(Request::METHOD_GET, '/bookmark/' . self::EXISTING_BOOKMARK_URL);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful()
@@ -81,7 +83,7 @@ class RESTControllerTest extends WebTestCase
             [],
             [],
             json_encode([
-                'url' => 'http://google.com',
+                'url' => self::EXISTING_BOOKMARK_URL,
             ])
         );
 
@@ -93,6 +95,8 @@ class RESTControllerTest extends WebTestCase
 
     /**
      * @dataProvider createBookmarkInvalidRequestProvider
+     *
+     * @param $data
      */
     public function testCreateBookmarkInvalidRequest($data)
     {
@@ -124,5 +128,73 @@ class RESTControllerTest extends WebTestCase
                 ],
             ]
         ];
+    }
+
+    public function testCreateCommentSuccess()
+    {
+        $this->client->request(
+            Request::METHOD_POST,
+            '/bookmark/' . $this->getExistingBookmarkUid() . '/comment',
+            [],
+            [],
+            [],
+            json_encode([
+                'text' => 'comment text'
+            ])
+        );
+
+        $this->assertEquals(
+            Response::HTTP_CREATED,
+            $this->client->getResponse()->getStatusCode()
+        );
+    }
+
+    /**
+     * @dataProvider createCommentInvalidRequestProvider
+     *
+     * @param $data
+     */
+    public function testCreateCommentInvalidRequest($data)
+    {
+        $this->client->request(
+            Request::METHOD_POST,
+            '/bookmark/' . $this->getExistingBookmarkUid() . '/comment',
+            [],
+            [],
+            [],
+            json_encode($data)
+        );
+
+        $this->assertEquals(
+            Response::HTTP_BAD_REQUEST,
+            $this->client->getResponse()->getStatusCode()
+        );
+    }
+
+    public function createCommentInvalidRequestProvider()
+    {
+        return [
+            [
+                [],
+                [
+                    'text' => '',
+                ],
+            ]
+        ];
+    }
+
+    /**
+     * @return int
+     */
+    protected function getExistingBookmarkUid()
+    {
+        return $this
+            ->client
+            ->getContainer()
+            ->get('doctrine')
+            ->getManager()
+            ->getRepository(Bookmark::class)
+            ->findOneBy(['url' => self::EXISTING_BOOKMARK_URL])
+            ->getUid();
     }
 }
