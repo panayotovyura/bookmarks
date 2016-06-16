@@ -101,3 +101,71 @@ Response:
     ]
 }
 ```
+
+#### Create bookmark:
+
+Example:
+```sh
+POST /bookmark
+
+{"url": "http://google.com"}
+```
+Response:
+```sh
+{
+    "uid": 1
+}
+```
+
+#### Create comment for bookmark:
+
+Format:
+```sh
+POST /bookmark/{uid}/comment
+
+{"text": "comment text"}
+```
+Example:
+```sh
+POST /bookmark/1/comment
+
+{"text": "comment text"}
+```
+Response:
+```sh
+{
+    "uid": 1
+}
+```
+
+#### Update comment:
+
+Format:
+```sh
+PUT /comment/{uid}
+
+{"text": "comment text"}
+```
+Example:
+```sh
+POST /comment/1
+
+{"text": "comment text"}
+```
+Response:
+```sh
+{
+    "uid": 1
+}
+```
+
+### Delete comment:
+
+Format:
+```sh
+DELETE /comment/{uid}
+```
+Example:
+```sh
+DELETE /comment/1
+```
