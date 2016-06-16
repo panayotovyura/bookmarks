@@ -1,4 +1,4 @@
-<a href="https://travis-ci.org/panayotovyura/bookmarks"><img src="https://travis-ci.org/panayotovyura/bookmarks.svg"></a>
+<a href="https://travis-ci.org/panayotovyura/bookmarks"><img src="https://travis-ci.org/panayotovyura/bookmarks.svg?branch=master"></a>
 
 # Bookmarks
 
