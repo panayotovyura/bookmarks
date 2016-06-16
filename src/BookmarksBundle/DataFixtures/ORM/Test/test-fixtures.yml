@@ -2,6 +2,9 @@ BookmarksBundle\Entity\Bookmark:
     bookmark{1..20}:
         createdAt: <dateTimeBetween('2016-06-14', '2016-06-16')>
         url: <url()>
+    bookmarkForTest:
+        createdAt: <dateTime('2016-06-14')>
+        url: 'http://google.com'
 
 BookmarksBundle\Entity\Comment:
     comment{1..200}:

@@ -26,5 +26,30 @@ class RESTControllerTest extends WebTestCase
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful()
         );
+
+        $this->assertEquals(
+            10,
+            count(
+                json_decode($this->client->getResponse()->getContent())
+            )
+        );
+    }
+
+    public function testGetBookmarkByUrlSuccess()
+    {
+        $this->client->request(Request::METHOD_GET, '/bookmark/http://google.com');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful()
+        );
+    }
+
+    public function testGetBookmarkByUrlNotFound()
+    {
+        $this->client->request(Request::METHOD_GET, '/bookmark/http://not.exist.domain.com');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isNotFound()
+        );
     }
 }
