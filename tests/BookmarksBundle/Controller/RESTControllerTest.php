@@ -305,6 +305,18 @@ class RESTControllerTest extends WebTestCase
         );
     }
 
+    public function createUpdateCommentRequestProvider()
+    {
+        return [
+            [
+                [],
+                [
+                    'text' => '',
+                ],
+            ]
+        ];
+    }
+
     public function testDeleteCommentSuccess()
     {
         $comment = $this->getExistingComment();
@@ -335,17 +347,16 @@ class RESTControllerTest extends WebTestCase
         );
     }
 
-    public function createUpdateCommentRequestProvider()
+    public function testDeleteCommentNotFoundByIp()
     {
-        return [
-            [
-                [],
-                [
-                    'text' => '',
-                ],
-            ]
-        ];
+        $this->client->request(Request::METHOD_DELETE, '/comment/1');
+
+        $this->assertEquals(
+            Response::HTTP_NOT_FOUND,
+            $this->client->getResponse()->getStatusCode()
+        );
     }
+
 
     /**
      * @return Bookmark
