@@ -38,7 +38,7 @@ Analysis Tools:
 
 ### For frontend developer:
 
-1. Get 10 latest bookmarks:
+- Get 10 latest bookmarks:
 
 Example:
 ```sh
@@ -71,7 +71,8 @@ Response:
 	...
 ]
 ```
-2. Get bookmark by url:
+
+- Get bookmark by url:
 
 Format:
 ```sh
