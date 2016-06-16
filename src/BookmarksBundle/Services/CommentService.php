@@ -3,7 +3,6 @@
 namespace BookmarksBundle\Services;
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityRepository;
 use BookmarksBundle\Entity\Comment;
 
 class CommentService
@@ -14,20 +13,13 @@ class CommentService
     private $entityManager;
 
     /**
-     * @var EntityRepository
-     */
-    private $repository;
-
-    /**
      * BookmarkService constructor
      *
      * @param EntityManager $entityManager
-     * @param EntityRepository $repository
      */
-    public function __construct(EntityManager $entityManager, EntityRepository $repository)
+    public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
-        $this->repository = $repository;
     }
 
     /**

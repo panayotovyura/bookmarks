@@ -8,11 +8,6 @@ services:
         class: BookmarksBundle\Services\BookmarkService
         arguments: ['@doctrine.orm.entity_manager', '@bookmarks.repository']
 
-    comment.repository:
-        class: Doctrine\ORM\EntityRepository
-        factory: ['@doctrine.orm.entity_manager', getRepository]
-        arguments: ['BookmarksBundle:Comment']
-
     comment:
         class: BookmarksBundle\Services\CommentService
-        arguments: ['@doctrine.orm.entity_manager', '@comment.repository']
+        arguments: ['@doctrine.orm.entity_manager']
