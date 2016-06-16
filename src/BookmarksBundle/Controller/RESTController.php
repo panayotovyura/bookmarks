@@ -120,10 +120,7 @@ class RESTController extends Controller
             ->setText($text)
             ->setBookmark($bookmark);
 
-        // todo: move to service
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($comment);
-        $entityManager->flush();
+        $this->get('comment')->save($comment);
 
         return $this->json(['uid' => $comment->getUid()], Response::HTTP_CREATED);
     }
@@ -161,12 +158,7 @@ class RESTController extends Controller
             throw new BadRequestHttpException($violationsList->get(0)->getMessage());
         }
 
-        // todo: move to service
-        if ($comment->isChangeableAndDeletable()) {
-            $comment->setText($text);
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->flush();
-        }
+        $this->get('comment')->updateText($comment, $text);
 
         return $this->json(['uid' => $comment->getUid()]);
     }
@@ -190,12 +182,7 @@ class RESTController extends Controller
             throw new NotFoundHttpException();
         }
 
-        // todo: move to service
-        if ($comment->isChangeableAndDeletable()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->remove($comment);
-            $entityManager->flush();
-        }
+        $this->get('comment')->delete($comment);
 
         return $this->json([], Response::HTTP_NO_CONTENT);
     }
