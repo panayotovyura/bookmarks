@@ -1,3 +1,5 @@
+<a href="https://travis-ci.org/panayotovyura/bookmarks"><img src="https://travis-ci.org/panayotovyura/bookmarks.svg"></a>
+
 bookmarks
 =========
 
