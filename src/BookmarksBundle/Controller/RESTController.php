@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class RESTController extends Controller
 {
@@ -62,14 +63,7 @@ class RESTController extends Controller
     {
         $url = $this->getRequestBodyJsonVariable('url', $request);
 
-        $violationsList = $this->get('validator')->validate(
-            $url,
-            [
-                new Assert\NotBlank(),
-                new Assert\Url()
-            ]
-        );
-
+        $violationsList = $this->validateUrl($url);
         if (count($violationsList) > 0) {
             throw new BadRequestHttpException($violationsList->get(0)->getMessage());
         }
@@ -103,14 +97,7 @@ class RESTController extends Controller
     {
         $text = $this->getRequestBodyJsonVariable('text', $request);
 
-        // todo: move to function
-        $violationsList = $this->get('validator')->validate(
-            $text,
-            [
-                new Assert\NotBlank(),
-            ]
-        );
-
+        $violationsList = $this->validateText($text);
         if (count($violationsList) > 0) {
             throw new BadRequestHttpException($violationsList->get(0)->getMessage());
         }
@@ -146,14 +133,8 @@ class RESTController extends Controller
         }
 
         $text = $this->getRequestBodyJsonVariable('text', $request);
-        // todo: move to function
-        $violationsList = $this->get('validator')->validate(
-            $text,
-            [
-                new Assert\NotBlank(),
-            ]
-        );
 
+        $violationsList = $this->validateText($text);
         if (count($violationsList) > 0) {
             throw new BadRequestHttpException($violationsList->get(0)->getMessage());
         }
@@ -185,6 +166,41 @@ class RESTController extends Controller
         $this->get('comment')->delete($comment);
 
         return $this->json([], Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * Validate text, returns constraint violations list
+     *
+     * @param $text
+     *
+     * @return ConstraintViolationListInterface
+     */
+    protected function validateText($text)
+    {
+        return $this->get('validator')->validate(
+            $text,
+            [
+                new Assert\NotBlank(),
+            ]
+        );
+    }
+
+    /**
+     * Validate url, returns constraint violations list
+     *
+     * @param $url
+     *
+     * @return ConstraintViolationListInterface
+     */
+    protected function validateUrl($url)
+    {
+        return $this->get('validator')->validate(
+            $url,
+            [
+                new Assert\NotBlank(),
+                new Assert\Url()
+            ]
+        );
     }
 
     /**
